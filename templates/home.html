@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Daily Planner System{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container text-center" data-aos="fade-up">
+        <h1 class="display-3 fw-bold mb-4">Welcome to Daily Planner</h1>
+        <p class="lead mb-5">Organize your tasks, boost productivity, and achieve your goals with our comprehensive planning system.</p>
+        {% if not current_user.is_authenticated %}
+        <div class="d-flex gap-3 justify-content-center">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg px-5">Get Started</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg px-5">Sign In</a>
+        </div>
+        {% else %}
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg px-5">Go to Dashboard</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-4">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="feature-card text-center p-4">
+                <div class="feature-icon mb-3">
+                    <i class="bi bi-list-check display-4 text-primary"></i>
+                </div>
+                <h3 class="h4 mb-3">Task Management</h3>
+                <p class="text-muted">Create, organize, and track your daily, weekly, and monthly tasks with ease.</p>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="feature-card text-center p-4">
+                <div class="feature-icon mb-3">
+                    <i class="bi bi-calendar-event display-4 text-success"></i>
+                </div>
+                <h3 class="h4 mb-3">Interactive Calendar</h3>
+                <p class="text-muted">Visualize your schedule with our beautiful calendar interface.</p>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="feature-card text-center p-4">
+                <div class="feature-icon mb-3">
+                    <i class="bi bi-graph-up display-4 text-info"></i>
+                </div>
+                <h3 class="h4 mb-3">Progress Tracking</h3>
+                <p class="text-muted">Monitor your productivity and celebrate your achievements.</p>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="400">
+            <div class="feature-card text-center p-4">
+                <div class="feature-icon mb-3">
+                    <i class="bi bi-journal-bookmark display-4 text-warning"></i>
+                </div>
+                <h3 class="h4 mb-3">Notes System</h3>
+                <p class="text-muted">Capture your thoughts and ideas with our rich text editor.</p>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="500">
+            <div class="feature-card text-center p-4">
+                <div class="feature-icon mb-3">
+                    <i class="bi bi-file-earmark-pdf display-4 text-danger"></i>
+                </div>
+                <h3 class="h4 mb-3">Export Options</h3>
+                <p class="text-muted">Export your tasks to PDF or CSV for offline access.</p>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="600">
+            <div class="feature-card text-center p-4">
+                <div class="feature-icon mb-3">
+                    <i class="bi bi-bell display-4 text-secondary"></i>
+                </div>
+                <h3 class="h4 mb-3">Notifications</h3>
+                <p class="text-muted">Never miss a deadline with browser notifications.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

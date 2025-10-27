@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}Tasks - Daily Planner System{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4" data-aos="fade-down">
+        <div class="col-md-8">
+            <h1 class="display-6"><i class="bi bi-list-task"></i> Task Management</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal">
+                <i class="bi bi-plus-circle"></i> Add Task
+            </button>
+            <div class="btn-group ms-2">
+                <a href="{{ url_for('tasks.export_pdf') }}" class="btn btn-outline-danger">
+                    <i class="bi bi-file-pdf"></i> PDF
+                </a>
+                <a href="{{ url_for('tasks.export_csv') }}" class="btn btn-outline-success">
+                    <i class="bi bi-file-spreadsheet"></i> CSV
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12" data-aos="fade-up">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Progress Overview</h5>
+                    <div class="row text-center mb-3">
+                        <div class="col-md-4">
+                            <h3 class="text-primary">{{ total }}</h3>
+                            <p class="text-muted">Total</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h3 class="text-success">{{ completed }}</h3>
+                            <p class="text-muted">Completed</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h3 class="text-warning">{{ incomplete }}</h3>
+                            <p class="text-muted">Pending</p>
+                        </div>
+                    </div>
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: {{ percentage }}%"
+                             aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100">
+                            {{ percentage }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            {% if tasks %}
+                <div class="row g-3">
+                    {% for task in tasks %}
+                    <div class="col-md-6" data-aos="fade-up">
+                        <div class="task-card {{ 'completed' if task.status == 'complete' else '' }}">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input task-checkbox" type="checkbox" 
+                                           id="task{{ task.id }}" 
+                                           data-task-id="{{ task.id }}"
+                                           {{ 'checked' if task.status == 'complete' else '' }}>
+                                    <label class="form-check-label" for="task{{ task.id }}">
+                                        <h5 class="mb-0">{{ task.name }}</h5>
+                                    </label>
+                                </div>
+                                <span class="badge bg-{{ 'primary' if task.frequency == 'daily' else 'success' if task.frequency == 'weekly' else 'warning' }}">
+                                    {{ task.frequency }}
+                                </span>
+                            </div>
+                            
+                            {% if task.description %}
+                            <p class="text-muted mb-2">{{ task.description }}</p>
+                            {% endif %}
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar"></i> {{ task.date }}
+                                    {% if task.time %}
+                                    <i class="bi bi-clock ms-2"></i> {{ task.time }}
+                                    {% endif %}
+                                </small>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary" 
+                                            onclick="editTask({{ task.id }}, '{{ task.name }}', '{{ task.description }}', '{{ task.date }}', '{{ task.time }}', '{{ task.frequency }}', '{{ task.status }}')">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <form method="POST" action="{{ url_for('tasks.delete_task', task_id=task.id) }}" style="display: inline;">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                onclick="return confirm('Are you sure you want to delete this task?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5" data-aos="zoom-in">
+                    <i class="bi bi-inbox display-1 text-muted"></i>
+                    <h3 class="mt-3">No tasks yet</h3>
+                    <p class="text-muted">Create your first task to get started!</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal">
+                        <i class="bi bi-plus-circle"></i> Add Your First Task
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addTaskModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Add New Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('tasks.add_task') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="taskName" class="form-label">Task Name *</label>
+                        <input type="text" class="form-control" id="taskName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="taskDescription" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="taskDate" class="form-label">Date *</label>
+                            <input type="date" class="form-control" id="taskDate" name="date" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="taskTime" class="form-label">Time</label>
+                            <input type="time" class="form-control" id="taskTime" name="time">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskFrequency" class="form-label">Frequency *</label>
+                        <select class="form-select" id="taskFrequency" name="frequency" required>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Add Task
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editTaskModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-pencil"></i> Edit Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="editTaskForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editTaskName" class="form-label">Task Name *</label>
+                        <input type="text" class="form-control" id="editTaskName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editTaskDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editTaskDescription" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editTaskDate" class="form-label">Date *</label>
+                            <input type="date" class="form-control" id="editTaskDate" name="date" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editTaskTime" class="form-label">Time</label>
+                            <input type="time" class="form-control" id="editTaskTime" name="time">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editTaskFrequency" class="form-label">Frequency *</label>
+                        <select class="form-select" id="editTaskFrequency" name="frequency" required>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editTaskStatus" class="form-label">Status *</label>
+                        <select class="form-select" id="editTaskStatus" name="status" required>
+                            <option value="incomplete">Pending</option>
+                            <option value="complete">Completed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Update Task
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function editTask(id, name, description, date, time, frequency, status) {
+    document.getElementById('editTaskForm').action = `/tasks/update/${id}`;
+    document.getElementById('editTaskName').value = name;
+    document.getElementById('editTaskDescription').value = description || '';
+    document.getElementById('editTaskDate').value = date;
+    document.getElementById('editTaskTime').value = time || '';
+    document.getElementById('editTaskFrequency').value = frequency;
+    document.getElementById('editTaskStatus').value = status;
+    
+    new bootstrap.Modal(document.getElementById('editTaskModal')).show();
+}
+
+document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        const taskId = this.dataset.taskId;
+        
+        fetch(`/tasks/toggle/${taskId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
