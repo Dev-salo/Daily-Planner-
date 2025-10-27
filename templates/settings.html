@@ -3,133 +3,92 @@
 {% block title %}Settings - Daily Planner System{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row mb-4" data-aos="fade-down">
-        <div class="col">
-            <h1 class="display-6"><i class="bi bi-gear"></i> Settings</h1>
-            <p class="text-muted">Customize your planner experience</p>
-        </div>
-    </div>
-
-    <div class="row g-4">
-        <div class="col-md-6" data-aos="fade-right">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="bi bi-palette"></i> Theme Customization</h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label">Color Theme</label>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-outline-secondary flex-fill" id="lightThemeBtn">
-                                <i class="bi bi-sun"></i> Light
-                            </button>
-                            <button class="btn btn-outline-secondary flex-fill" id="darkThemeBtn">
-                                <i class="bi bi-moon-stars"></i> Dark
-                            </button>
-                        </div>
-                    </div>
-                    <small class="text-muted">Your theme preference is saved automatically</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6" data-aos="fade-left">
-            <div class="card shadow-sm">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="bi bi-layout-three-columns"></i> Layout Options</h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label">Task View</label>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-outline-secondary flex-fill" id="gridViewBtn">
-                                <i class="bi bi-grid"></i> Grid
-                            </button>
-                            <button class="btn btn-outline-secondary flex-fill" id="listViewBtn">
-                                <i class="bi bi-list"></i> List
-                            </button>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Display Mode</label>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-outline-secondary flex-fill" id="compactViewBtn">
-                                <i class="bi bi-layout-text-sidebar"></i> Compact
-                            </button>
-                            <button class="btn btn-outline-secondary flex-fill" id="expandedViewBtn">
-                                <i class="bi bi-layout-text-window"></i> Expanded
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6" data-aos="fade-right">
-            <div class="card shadow-sm">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="bi bi-calendar-range"></i> Calendar View</h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label">Default Calendar View</label>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-outline-secondary" id="dayViewBtn">
-                                <i class="bi bi-calendar-day"></i> Day
-                            </button>
-                            <button class="btn btn-outline-secondary" id="weekViewBtn">
-                                <i class="bi bi-calendar-week"></i> Week
-                            </button>
-                            <button class="btn btn-outline-secondary" id="monthViewBtn">
-                                <i class="bi bi-calendar-month"></i> Month
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6" data-aos="fade-left">
-            <div class="card shadow-sm">
-                <div class="card-header bg-warning text-white">
-                    <h5 class="mb-0"><i class="bi bi-bell"></i> Notifications</h5>
-                </div>
-                <div class="card-body">
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="browserNotifications" checked>
-                        <label class="form-check-label" for="browserNotifications">
-                            Enable browser notifications
-                        </label>
-                    </div>
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="soundNotifications">
-                        <label class="form-check-label" for="soundNotifications">
-                            Play sound for reminders
-                        </label>
-                    </div>
-                    <button class="btn btn-sm btn-outline-primary" id="testNotificationBtn">
-                        <i class="bi bi-bell"></i> Test Notification
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-12" data-aos="fade-up">
-            <div class="card shadow-sm">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0"><i class="bi bi-person"></i> Account Information</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
+<div class="container-fluid px-4 py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm" data-aos="fade-up">
+                <h2 class="section-header">Settings & Preferences</h2>
+                <div class="card-body p-4">
+                    <div class="row g-4">
                         <div class="col-md-6">
-                            <p><strong>Name:</strong> {{ current_user.name }}</p>
-                            <p><strong>Email:</strong> {{ current_user.email }}</p>
+                            <div class="card border">
+                                <div class="card-body">
+                                    <h5 class="mb-3"><i class="bi bi-palette"></i> Theme Customization</h5>
+                                    <div class="mb-3">
+                                        <label class="form-label">Color Theme</label>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-outline-primary flex-fill" id="lightThemeBtn">
+                                                <i class="bi bi-sun"></i> Light
+                                            </button>
+                                            <button class="btn btn-outline-primary flex-fill" id="darkThemeBtn">
+                                                <i class="bi bi-moon-stars"></i> Dark
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Your theme preference is saved automatically</small>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-6 text-end">
-                            <button class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to logout?') ? window.location.href='{{ url_for('auth.logout') }}' : false">
-                                <i class="bi bi-box-arrow-right"></i> Logout
-                            </button>
+
+                        <div class="col-md-6">
+                            <div class="card border">
+                                <div class="card-body">
+                                    <h5 class="mb-3"><i class="bi bi-layout-three-columns"></i> Layout Options</h5>
+                                    <div class="mb-3">
+                                        <label class="form-label">Task View</label>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-outline-primary flex-fill" id="gridViewBtn">
+                                                <i class="bi bi-grid"></i> Grid
+                                            </button>
+                                            <button class="btn btn-outline-primary flex-fill" id="listViewBtn">
+                                                <i class="bi bi-list"></i> List
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Display Mode</label>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-outline-primary flex-fill" id="compactViewBtn">
+                                                Compact
+                                            </button>
+                                            <button class="btn btn-outline-primary flex-fill" id="expandedViewBtn">
+                                                Expanded
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card border">
+                                <div class="card-body">
+                                    <h5 class="mb-3"><i class="bi bi-calendar-range"></i> Calendar View</h5>
+                                    <div class="mb-3">
+                                        <label class="form-label">Default Calendar View</label>
+                                        <select class="form-select" id="calendarViewSelect">
+                                            <option value="day">Day View</option>
+                                            <option value="week" selected>Weekly View</option>
+                                            <option value="month">Month View</option>
+                                        </select>
+                                    </div>
+                                    <small class="text-muted">Your preferred task view layout</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="card border">
+                                <div class="card-body">
+                                    <h5 class="mb-3"><i class="bi bi-person"></i> User Information</h5>
+                                    <p class="mb-1"><strong>Username:</strong> {{ current_user.name }}</p>
+                                    <p class="mb-4"><strong>Email:</strong> {{ current_user.email }}</p>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-primary">Save Settings</button>
+                                        <button class="btn btn-secondary">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

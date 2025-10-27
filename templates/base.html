@@ -10,79 +10,51 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link href="{{ url_for('static', filename='css/custom.css') }}?v={{ cache_buster }}" rel="stylesheet">
     
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient sticky-top">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="{{ url_for('main.home') }}">
-                <i class="bi bi-calendar-check"></i> Daily Planner
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold text-primary" href="{{ url_for('main.home') }}">
+                Daily Planner
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.home') }}">
-                            <i class="bi bi-house"></i> Home
-                        </a>
+                        <a class="nav-link text-dark" href="{{ url_for('main.home') }}">Home</a>
                     </li>
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.dashboard') }}">
-                            <i class="bi bi-speedometer2"></i> Dashboard
-                        </a>
+                        <a class="nav-link text-dark" href="{{ url_for('tasks.tasks') }}">Task & Progress</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('tasks.tasks') }}">
-                            <i class="bi bi-list-task"></i> Tasks
-                        </a>
+                        <a class="nav-link text-dark" href="{{ url_for('main.calendar') }}">Calendar</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.calendar') }}">
-                            <i class="bi bi-calendar3"></i> Calendar
-                        </a>
+                        <a class="nav-link text-dark" href="{{ url_for('notes.notes') }}">Notes & AI Chatbot</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('notes.notes') }}">
-                            <i class="bi bi-journal-text"></i> Notes
-                        </a>
+                        <a class="nav-link text-dark" href="{{ url_for('main.settings') }}">Settings</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.settings') }}">
-                            <i class="bi bi-gear"></i> Settings
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle"></i> {{ current_user.name }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">
-                                <i class="bi bi-box-arrow-right"></i> Logout
-                            </a></li>
-                        </ul>
+                        <a class="nav-link text-dark" href="{{ url_for('auth.logout') }}">Logout</a>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.login') }}">
-                            <i class="bi bi-box-arrow-in-right"></i> Login
-                        </a>
+                        <a class="nav-link text-dark" href="{{ url_for('auth.login') }}">Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-outline-light ms-2" href="{{ url_for('auth.register') }}">
-                            Register
+                        <a class="nav-link btn btn-primary text-white ms-2 px-4" href="{{ url_for('auth.register') }}">
+                            Get Started
                         </a>
                     </li>
                     {% endif %}
-                    <li class="nav-item">
-                        <button class="nav-link btn" id="themeToggle" title="Toggle Theme">
-                            <i class="bi bi-moon-stars"></i>
-                        </button>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -110,9 +82,9 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-dark text-white text-center py-4 mt-5">
+    <footer class="bg-white border-top text-center py-4 mt-5">
         <div class="container">
-            <p class="mb-0">&copy; 2025 Daily Planner System. Organize your life, achieve your goals.</p>
+            <p class="mb-0 text-muted">&copy; 2025 Daily Planner System. Stay organized, stay productive.</p>
         </div>
     </footer>
 

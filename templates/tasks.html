@@ -3,60 +3,27 @@
 {% block title %}Tasks - Daily Planner System{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row mb-4" data-aos="fade-down">
-        <div class="col-md-8">
-            <h1 class="display-6"><i class="bi bi-list-task"></i> Task Management</h1>
-        </div>
-        <div class="col-md-4 text-end">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal">
-                <i class="bi bi-plus-circle"></i> Add Task
-            </button>
-            <div class="btn-group ms-2">
-                <a href="{{ url_for('tasks.export_pdf') }}" class="btn btn-outline-danger">
-                    <i class="bi bi-file-pdf"></i> PDF
-                </a>
-                <a href="{{ url_for('tasks.export_csv') }}" class="btn btn-outline-success">
-                    <i class="bi bi-file-spreadsheet"></i> CSV
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-4">
-        <div class="col-md-12" data-aos="fade-up">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Progress Overview</h5>
-                    <div class="row text-center mb-3">
-                        <div class="col-md-4">
-                            <h3 class="text-primary">{{ total }}</h3>
-                            <p class="text-muted">Total</p>
-                        </div>
-                        <div class="col-md-4">
-                            <h3 class="text-success">{{ completed }}</h3>
-                            <p class="text-muted">Completed</p>
-                        </div>
-                        <div class="col-md-4">
-                            <h3 class="text-warning">{{ incomplete }}</h3>
-                            <p class="text-muted">Pending</p>
+<div class="container-fluid px-4 py-4">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm" data-aos="fade-right">
+                <h2 class="section-header">Task Management</h2>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTaskModal">
+                            + Add New Task
+                        </button>
+                        <div class="btn-group">
+                            <a href="{{ url_for('tasks.export_pdf') }}" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-file-pdf"></i> PDF
+                            </a>
+                            <a href="{{ url_for('tasks.export_csv') }}" class="btn btn-outline-success btn-sm">
+                                <i class="bi bi-file-spreadsheet"></i> CSV
+                            </a>
                         </div>
                     </div>
-                    <div class="progress" style="height: 25px;">
-                        <div class="progress-bar bg-success" role="progressbar" 
-                             style="width: {{ percentage }}%"
-                             aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100">
-                            {{ percentage }}%
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-12">
-            {% if tasks %}
+                    {% if tasks %}
                 <div class="row g-3">
                     {% for task in tasks %}
                     <div class="col-md-6" data-aos="fade-up">
@@ -103,17 +70,44 @@
                         </div>
                     </div>
                     {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox display-1 text-muted"></i>
+                        <h3 class="mt-3">No tasks yet</h3>
+                        <p class="text-muted">Create your first task to get started!</p>
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTaskModal">
+                            + Add Your First Task
+                        </button>
+                    </div>
+                    {% endif %}
                 </div>
-            {% else %}
-                <div class="text-center py-5" data-aos="zoom-in">
-                    <i class="bi bi-inbox display-1 text-muted"></i>
-                    <h3 class="mt-3">No tasks yet</h3>
-                    <p class="text-muted">Create your first task to get started!</p>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal">
-                        <i class="bi bi-plus-circle"></i> Add Your First Task
-                    </button>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card shadow-sm" data-aos="fade-left">
+                <h2 class="section-header section-header-cyan">Progress Overview</h2>
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <canvas id="progressChart" width="200" height="200"></canvas>
+                    </div>
+                    <div class="row text-center mb-3">
+                        <div class="col-12 mb-2">
+                            <h4 class="text-primary">{{ total }}</h4>
+                            <p class="text-muted mb-0"><strong>Total Tasks:</strong> {{ total }}</p>
+                        </div>
+                        <div class="col-6">
+                            <h5 class="text-success">{{ completed }}</h5>
+                            <p class="text-muted mb-0">Completed: {{ completed }}</p>
+                        </div>
+                        <div class="col-6">
+                            <h5 class="text-warning">{{ incomplete }}</h5>
+                            <p class="text-muted mb-0">Pending: {{ incomplete }}</p>
+                        </div>
+                    </div>
                 </div>
-            {% endif %}
+            </div>
         </div>
     </div>
 </div>
@@ -222,6 +216,37 @@
 
 {% block extra_js %}
 <script>
+const completedCount = {{ completed }};
+const incompleteCount = {{ incomplete }};
+
+const ctx = document.getElementById('progressChart');
+if (ctx) {
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Completed', 'Pending'],
+            datasets: [{
+                data: [completedCount, incompleteCount],
+                backgroundColor: ['#28a745', '#6c757d'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 15
+                    }
+                }
+            }
+        }
+    });
+}
+
 function editTask(id, name, description, date, time, frequency, status) {
     document.getElementById('editTaskForm').action = `/tasks/update/${id}`;
     document.getElementById('editTaskName').value = name;
