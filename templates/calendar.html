@@ -16,6 +16,53 @@
     </div>
 </div>
 
+<div class="modal fade" id="addTaskModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Add New Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('tasks.add_task') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="taskName" class="form-label">Task Name *</label>
+                        <input type="text" class="form-control" id="taskName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="taskDescription" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="taskDate" class="form-label">Date *</label>
+                            <input type="date" class="form-control" id="taskDate" name="date" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="taskTime" class="form-label">Time</label>
+                            <input type="time" class="form-control" id="taskTime" name="time">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskFrequency" class="form-label">Frequency *</label>
+                        <select class="form-select" id="taskFrequency" name="frequency" required>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Add Task
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="taskDetailModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -62,7 +109,14 @@ document.addEventListener('DOMContentLoaded', function() {
             new bootstrap.Modal(document.getElementById('taskDetailModal')).show();
         },
         dateClick: function(info) {
-            window.location.href = '/tasks';
+            const clickedDate = info.dateStr;
+            document.getElementById('taskDate').value = clickedDate;
+            document.getElementById('taskName').value = '';
+            document.getElementById('taskDescription').value = '';
+            document.getElementById('taskTime').value = '';
+            document.getElementById('taskFrequency').value = 'daily';
+            
+            new bootstrap.Modal(document.getElementById('addTaskModal')).show();
         }
     });
     

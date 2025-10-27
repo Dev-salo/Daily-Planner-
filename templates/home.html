@@ -3,15 +3,56 @@
 {% block title %}Home - Daily Planner System{% endblock %}
 
 {% block content %}
-<div class="hero-section">
-    <div class="container text-center" data-aos="fade-up">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <h1 class="display-4 fw-bold mb-3">Track Your Progress</h1>
-                <p class="lead mb-4">Visualize your achievements with interactive charts and calendars</p>
+<div id="heroCarousel" class="carousel slide hero-section" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+    </div>
+    
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <div class="container text-center py-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <h1 class="display-4 fw-bold mb-3">Track Your Progress</h1>
+                        <p class="lead mb-4">Visualize your achievements with interactive charts and calendars</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="carousel-item">
+            <div class="container text-center py-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <h1 class="display-4 fw-bold mb-3">Stay Organized</h1>
+                        <p class="lead mb-4">Manage your daily, weekly, and monthly tasks efficiently</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="carousel-item">
+            <div class="container text-center py-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <h1 class="display-4 fw-bold mb-3">Achieve Your Goals</h1>
+                        <p class="lead mb-4">Plan smarter and accomplish more every day</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
 </div>
 
 <div class="container py-4">
