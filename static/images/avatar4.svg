@@ -1,0 +1,5 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Avatar 4: Orange with heart -->
+  <circle cx="50" cy="50" r="50" fill="#f97316"/>
+  <path d="M 50 35 C 55 30 65 30 65 40 C 65 50 50 65 50 65 C 50 65 35 50 35 40 C 35 30 45 30 50 35 Z" fill="white"/>
+</svg>

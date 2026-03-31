@@ -3,85 +3,127 @@
 {% block title %}Dashboard - Daily Planner System{% endblock %}
 
 {% block content %}
+<style>
+    /* Styling adjustments to match provided clean aesthetic */
+    body {
+        background-color: #f4f6f9;
+    }
+    .stat-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 1.25rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+        height: 100%;
+    }
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+    }
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+        border: none;
+    }
+    .card-header {
+        border-top-left-radius: 12px !important;
+        border-top-right-radius: 12px !important;
+        padding: 0.75rem 1.25rem;
+    }
+    .text-sm {
+        font-size: 0.85rem;
+    }
+</style>
+
 <div class="container py-4">
     <div class="row mb-4" data-aos="fade-down">
         <div class="col">
-            <h1 class="display-5">Welcome, {{ current_user.name }}! 👋</h1>
+            <h2 class="display-6 text-secondary fw-normal">Welcome, {{ current_user.name }}! 👋</h2>
             <p class="text-muted">Here's your productivity overview</p>
         </div>
     </div>
 
+    <!-- 4 Stat Cards Top Row -->
     <div class="row g-4 mb-4">
+        <!-- Total Tasks -->
         <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
             <div class="stat-card">
                 <div class="d-flex align-items-center">
-                    <div class="stat-icon bg-primary">
+                    <div class="stat-icon" style="background-color: #0d6efd;">
                         <i class="bi bi-list-task"></i>
                     </div>
                     <div class="ms-3">
-                        <h3 class="mb-0">{{ total }}</h3>
-                        <p class="text-muted mb-0">Total Tasks</p>
+                        <h4 class="mb-0 fw-bold">{{ total }}</h4>
+                        <p class="text-muted mb-0 text-sm">Total Tasks</p>
                     </div>
                 </div>
             </div>
         </div>
         
+        <!-- Completed Tasks -->
         <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
             <div class="stat-card">
                 <div class="d-flex align-items-center">
-                    <div class="stat-icon bg-success">
+                    <div class="stat-icon" style="background-color: #198754;">
                         <i class="bi bi-check-circle"></i>
                     </div>
                     <div class="ms-3">
-                        <h3 class="mb-0">{{ completed }}</h3>
-                        <p class="text-muted mb-0">Completed</p>
+                        <h4 class="mb-0 fw-bold">{{ completed }}</h4>
+                        <p class="text-muted mb-0 text-sm">Completed</p>
                     </div>
                 </div>
             </div>
         </div>
         
+        <!-- Pending Tasks -->
         <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
             <div class="stat-card">
                 <div class="d-flex align-items-center">
-                    <div class="stat-icon bg-warning">
+                    <div class="stat-icon" style="background-color: #ffc107;">
                         <i class="bi bi-clock"></i>
                     </div>
                     <div class="ms-3">
-                        <h3 class="mb-0">{{ incomplete }}</h3>
-                        <p class="text-muted mb-0">Pending</p>
+                        <h4 class="mb-0 fw-bold">{{ incomplete }}</h4>
+                        <p class="text-muted mb-0 text-sm">Pending</p>
                     </div>
                 </div>
             </div>
         </div>
         
+        <!-- Progress Percentage -->
         <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
             <div class="stat-card">
                 <div class="d-flex align-items-center">
-                    <div class="stat-icon bg-info">
+                    <div class="stat-icon" style="background-color: #00b4d8;">
                         <i class="bi bi-graph-up"></i>
                     </div>
                     <div class="ms-3">
-                        <h3 class="mb-0">{{ percentage }}%</h3>
-                        <p class="text-muted mb-0">Progress</p>
+                        <h4 class="mb-0 fw-bold">{{ percentage }}%</h4>
+                        <p class="text-muted mb-0 text-sm">Progress</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Overall Progress Bar -->
     <div class="row mb-4" data-aos="fade-up">
         <div class="col-md-12">
-            <div class="card shadow-sm">
+            <div class="card p-2">
                 <div class="card-body">
-                    <h5 class="card-title mb-3">Overall Progress</h5>
-                    <div class="progress" style="height: 30px;">
-                        <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+                    <h6 class="card-title fw-bold text-dark mb-3">Overall Progress</h6>
+                    <div class="progress rounded-pill shadow-sm" style="height: 20px; background-color: #eef0f4;">
+                        <div class="progress-bar" 
+                             style="background-color: #0d6efd; width: {{ percentage }}%; transition: width 1s ease-in-out;"
                              role="progressbar" 
-                             style="width: {{ percentage }}%"
                              aria-valuenow="{{ percentage }}" 
                              aria-valuemin="0" 
                              aria-valuemax="100">
-                            {{ percentage }}%
                         </div>
                     </div>
                 </div>
@@ -89,20 +131,24 @@
         </div>
     </div>
 
-    <div class="row g-4">
-        <div class="col-md-6" data-aos="fade-right">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Upcoming Tasks</h5>
+    <!-- Upcoming Tasks & Achievements Row -->
+    <div class="row g-4 mb-4" data-aos="fade-up">
+        
+        <!-- Upcoming Tasks (Left) -->
+        <div class="col-md-6 d-flex">
+            <div class="card w-100 overflow-hidden d-flex flex-column">
+                <div class="card-header text-white" style="background-color: #0d6efd;">
+                    <h6 class="mb-0"><i class="bi bi-calendar-check me-2"></i>Upcoming Tasks</h6>
                 </div>
-                <div class="card-body">
+                <div class="card-body flex-grow-1 d-flex flex-column align-items-center justify-content-start p-3">
                     {% if upcoming_tasks %}
-                        <ul class="list-group list-group-flush">
-                            {% for task in upcoming_tasks %}
-                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="w-100 pe-2" style="max-height: 220px; overflow-y: auto;">
+                            <ul class="list-group list-group-flush w-100">
+                                {% for task in upcoming_tasks %}
+                            <li class="list-group-item d-flex justify-content-between align-items-start px-0">
                                 <div>
-                                    <h6 class="mb-1">{{ task.name }}</h6>
-                                    <small class="text-muted">
+                                    <h6 class="mb-1 text-dark">{{ task.name }}</h6>
+                                    <small class="text-muted text-sm">
                                         <i class="bi bi-calendar"></i> {{ task.date }}
                                         {% if task.time %}
                                         <i class="bi bi-clock ms-2"></i> {{ task.time }}
@@ -114,45 +160,155 @@
                                 </span>
                             </li>
                             {% endfor %}
-                        </ul>
+                            </ul>
+                        </div>
                     {% else %}
-                        <p class="text-muted text-center py-4">No upcoming tasks</p>
+                        <p class="text-muted text-sm mb-0">No upcoming tasks</p>
                     {% endif %}
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6" data-aos="fade-left">
-            <div class="card shadow-sm">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="bi bi-trophy"></i> Weekly Achievements</h5>
+        <!-- Weekly Achievements (Right) -->
+        <div class="col-md-6 d-flex">
+            <div class="card w-100 overflow-hidden d-flex flex-column">
+                <div class="card-header text-white" style="background-color: #198754;">
+                    <h6 class="mb-0"><i class="bi bi-trophy me-2"></i>Weekly Achievements</h6>
                 </div>
-                <div class="card-body">
-                    <div class="mb-3 text-center">
-                        <h3 class="text-success">{{ weekly_completed }}</h3>
-                        <p class="text-muted">Tasks completed this week</p>
-                    </div>
-                    {% if top_achievements %}
-                        <h6 class="mb-2">Top 3 Achievements:</h6>
-                        <ul class="list-group list-group-flush">
-                            {% for task in top_achievements %}
-                            <li class="list-group-item">
-                                <i class="bi bi-check-circle-fill text-success"></i> {{ task.name }}
-                            </li>
-                            {% endfor %}
-                        </ul>
+                <div class="card-body flex-grow-1 d-flex flex-column align-items-center justify-content-start text-center p-3">
+                    <h3 class="text-success mb-2 fw-bold" style="font-size: 2rem;">{{ recent_completed_tasks|length }}</h3>
+                    <p class="text-muted text-sm mb-3">Tasks completed this week</p>
+                    
+                    {% if recent_completed_tasks %}
+                        <div class="w-100 mt-2 text-start pe-2" style="max-height: 160px; overflow-y: auto;">
+                            <ul class="list-group list-group-flush">
+                                {% for completed_task in recent_completed_tasks %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <div>
+                                        <h6 class="mb-1 text-dark text-sm">{{ completed_task.task_name }}</h6>
+                                        <small class="text-muted" style="font-size: 0.75rem;">
+                                            <i class="bi bi-calendar"></i> {{ completed_task.completed_date }}
+                                        </small>
+                                    </div>
+                                    <span class="badge bg-success">+{{ completed_task.points_earned }} <i class="bi bi-star-fill text-warning"></i></span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     {% else %}
-                        <p class="text-muted text-center">Complete tasks to see your achievements!</p>
+                        <p class="text-muted mb-0" style="font-size: 0.8rem;">Complete tasks to see your achievements!</p>
                     {% endif %}
                 </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Points System Details -->
+    <div class="row mb-4" data-aos="fade-up">
+        <div class="col-md-12">
+            <div class="card shadow-sm p-4 text-center d-flex align-items-center justify-content-center flex-column">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-2" style="width: 70px; height: 70px; background-color: #fff9e6; border: 2px solid #ffc107;">
+                    <i class="bi bi-star-fill text-warning" style="font-size: 2rem;"></i>
+                </div>
+                <h3 class="fw-bold text-dark mb-1">{{ current_points }} Points</h3>
+                <p class="text-muted mb-0 text-sm">Your Lifetime Productivity Score</p>
             </div>
         </div>
     </div>
 
-    <div class="text-center mt-4" data-aos="zoom-in">
-        <a href="{{ url_for('tasks.tasks') }}" class="btn btn-primary btn-lg">
-            <i class="bi bi-plus-circle"></i> Add New Task
+    <!-- Add New Task Action -->
+    <div class="text-center mt-5 mb-3" data-aos="zoom-in">
+        <a href="{{ url_for('tasks.tasks') }}" class="btn text-white px-4 py-2" style="background-color: #0d6efd; border-radius: 8px; font-weight: 500;">
+            <i class="bi bi-plus-circle me-1"></i> Add New Task
         </a>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update next task timer on dashboard
+    function updateNextTaskTimer() {
+        const upcomingTasksList = document.querySelector('[data-task-id][data-task-date][data-task-time]');
+        if (!upcomingTasksList) return;
+        
+        const taskDate = upcomingTasksList.getAttribute('data-task-date');
+        const taskTime = upcomingTasksList.getAttribute('data-task-time');
+        
+        if (taskDate && taskTime) {
+            const targetTime = new Date(`${taskDate}T${taskTime}`);
+            const now = new Date();
+            const diff = targetTime - now;
+            
+            if (diff > 0) {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                let timeStr;
+                if (days > 0) {
+                    timeStr = `${String(days).padStart(2, '0')}:${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+                } else {
+                    timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                }
+                
+                const timerElement = document.getElementById('next-task-timer');
+                if (timerElement) {
+                    timerElement.textContent = timeStr;
+                    
+                    // Change color based on time remaining
+                    if (diff <= 5 * 60 * 1000) {
+                        timerElement.style.color = '#dc3545'; // Red
+                    } else if (diff <= 30 * 60 * 1000) {
+                        timerElement.style.color = '#ffc107'; // Yellow
+                    } else {
+                        timerElement.style.color = '#28a745'; // Green
+                    }
+                }
+            }
+        }
+    }
+    
+    // Update timer every second
+    updateNextTaskTimer();
+    setInterval(updateNextTaskTimer, 1000);
+    
+    // Also update the timer badge in navbar
+    function updateNavbarTimer() {
+        const upcomingTasksList = document.querySelector('[data-task-id][data-task-date][data-task-time]');
+        const timerBadge = document.getElementById('timer-badge');
+        const timerText = document.getElementById('timer-text');
+        
+        if (!upcomingTasksList || !timerBadge) return;
+        
+        const taskDate = upcomingTasksList.getAttribute('data-task-date');
+        const taskTime = upcomingTasksList.getAttribute('data-task-time');
+        const taskName = upcomingTasksList.getAttribute('data-task-name');
+        
+        if (taskDate && taskTime) {
+            const targetTime = new Date(`${taskDate}T${taskTime}`);
+            const now = new Date();
+            const diff = targetTime - now;
+            
+            if (diff > 0) {
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                
+                timerText.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+                timerBadge.style.display = 'block';
+                timerBadge.title = `${taskName} - ${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m remaining`;
+                
+                // Hide if no time left
+                if (diff <= 0) {
+                    timerBadge.style.display = 'none';
+                }
+            }
+        }
+    }
+    
+    updateNavbarTimer();
+    setInterval(updateNavbarTimer, 60000); // Update navbar timer every minute
+});
+</script>
 {% endblock %}

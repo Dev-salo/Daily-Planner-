@@ -1,0 +1,5 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Avatar 3: Green with star -->
+  <circle cx="50" cy="50" r="50" fill="#10b981"/>
+  <path d="M 50 30 L 56 48 L 75 48 L 61 60 L 67 78 L 50 66 L 33 78 L 39 60 L 25 48 L 44 48 Z" fill="white"/>
+</svg>

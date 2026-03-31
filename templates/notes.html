@@ -61,13 +61,22 @@
             <div class="card shadow-sm" data-aos="fade-left">
                 <h2 class="section-header section-header-cyan">AI Productivity Assistant</h2>
                 <div class="card-body p-4">
-                    <div class="chatbot-placeholder text-center py-5">
-                        <i class="bi bi-chat-dots display-4 text-muted"></i>
-                        <h5 class="mt-3">Hello! I'm your productivity assistant.</h5>
-                        <p class="text-muted">Ask me anything about task planning, time management, or staying organized!</p>
-                        <div class="mt-4">
-                            <textarea class="form-control mb-2" rows="3" placeholder="Ask me anything..."></textarea>
-                            <button class="btn btn-info text-white w-100">Send</button>
+                    <div id="chat-container">
+                        <div id="chat-history" class="mb-4" style="height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                            <div class="chatbot-placeholder text-center py-5" id="chat-placeholder">
+                                <i class="bi bi-chat-dots display-4 text-muted"></i>
+                                <h5 class="mt-3">Hello! I'm your productivity assistant.</h5>
+                                <p class="text-muted">Ask me anything about task planning, time management, or staying organized!</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 border-top pt-3">
+                            <textarea id="chat-input" class="form-control mb-2" rows="3" placeholder="Ask me anything..."></textarea>
+                            <button id="chat-send" class="btn btn-info text-white w-100 d-flex justify-content-center align-items-center">
+                                <span>Send</span>
+                                <div id="chat-spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </button>
                         </div>
                     </div>
                 </div>

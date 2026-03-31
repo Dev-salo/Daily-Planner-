@@ -181,4 +181,204 @@ document.addEventListener('DOMContentLoaded', function() {
             toast.remove();
         }, 5000);
     }
+    
+    // --- TIMEZONE AUTO-SAVE LOGIC ---
+    const timezoneSelect = document.getElementById('timezoneSelect');
+    if (timezoneSelect) {
+        timezoneSelect.addEventListener('change', function() {
+            const tzSpinner = document.getElementById('tz-spinner');
+            const tzSuccess = document.getElementById('tz-success');
+            
+            tzSpinner.classList.remove('d-none');
+            tzSuccess.classList.add('d-none');
+            
+            const formData = new FormData();
+            formData.append('timezone', this.value);
+            
+            fetch('/settings/update_timezone', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                tzSpinner.classList.add('d-none');
+                if (data.success) {
+                    tzSuccess.classList.remove('d-none');
+                    setTimeout(() => tzSuccess.classList.add('d-none'), 3000);
+                } else {
+                    showToast('Failed to save timezone: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                tzSpinner.classList.add('d-none');
+                showToast('Network error while saving timezone.', 'error');
+                console.error('Error:', error);
+            });
+        });
+    }
+
+    // --- CHANGE PASSWORD LOGIC ---
+    const pwdForm = document.getElementById('passwordChangeForm');
+    if (pwdForm) {
+        pwdForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const currentPwd = document.getElementById('currentPassword').value;
+            const newPwd = document.getElementById('newPassword').value;
+            const confirmPwd = document.getElementById('confirmPassword').value;
+            const alertBox = document.getElementById('pwd-alert');
+            const submitBtn = document.getElementById('pwd-submit');
+            
+            // Basic validation
+            if (newPwd !== confirmPwd) {
+                alertBox.className = 'alert alert-danger';
+                alertBox.textContent = 'New passwords do not match!';
+                alertBox.classList.remove('d-none');
+                return;
+            }
+            if (newPwd.length < 6) {
+                alertBox.className = 'alert alert-warning';
+                alertBox.textContent = 'Password must be at least 6 characters.';
+                alertBox.classList.remove('d-none');
+                return;
+            }
+            
+            // Lock form down
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+            alertBox.classList.add('d-none');
+            
+            // Prepare package
+            const formData = new FormData();
+            formData.append('current_password', currentPwd);
+            formData.append('new_password', newPwd);
+            formData.append('confirm_password', confirmPwd);
+            
+            fetch('/settings/change_password', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Change Password';
+                
+                alertBox.classList.remove('d-none');
+                if (data.success) {
+                    alertBox.className = 'alert alert-success';
+                    alertBox.textContent = data.message;
+                    pwdForm.reset(); // clear the inputs
+                    setTimeout(() => alertBox.classList.add('d-none'), 4000); // hide success message eventually
+                } else {
+                    alertBox.className = 'alert alert-danger';
+                    alertBox.textContent = data.message;
+                }
+            })
+            .catch(error => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Change Password';
+                alertBox.className = 'alert alert-danger';
+                alertBox.textContent = 'Network error while contacting server.';
+                alertBox.classList.remove('d-none');
+                console.error('Error:', error);
+            });
+        });
+    }
+
+    // --- AVATAR SELECTION LOGIC ---
+    const avatarOptions = document.querySelectorAll('.avatar-option');
+    
+    // Check both sessionStorage and data-selected attribute from server
+    avatarOptions.forEach(option => {
+        if (option.dataset.selected === 'true') {
+            option.classList.add('selected');
+        }
+        
+        option.addEventListener('click', function() {
+            avatarOptions.forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            const avatar = this.dataset.avatar;
+            sessionStorage.setItem('currentAvatar', avatar);
+            
+            // Update navbar avatar
+            document.getElementById('navbarAvatar').src = `/static/images/${avatar}.svg`;
+            
+            // Save to server
+            const formData = new FormData();
+            formData.append('avatar', avatar);
+            
+            fetch('/settings/update_avatar', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Avatar updated successfully!', 'success');
+                } else {
+                    showToast('Failed to update avatar', 'error');
+                }
+            })
+            .catch(error => {
+                showToast('Error updating avatar', 'error');
+                console.error('Error:', error);
+            });
+        });
+    });
+
+    // --- BACKGROUND COLOR LOGIC ---
+    const bgColorPicker = document.getElementById('bgColorPicker');
+    const bgColorValue = document.getElementById('bgColorValue');
+    
+    if (bgColorPicker) {
+        const savedColor = sessionStorage.getItem('bgColor') || '#e8ecf1';
+        bgColorPicker.value = savedColor;
+        bgColorValue.value = savedColor;
+        document.body.style.backgroundColor = savedColor;
+        
+        bgColorPicker.addEventListener('change', function() {
+            const color = this.value;
+            bgColorValue.value = color;
+            document.body.style.backgroundColor = color;
+            sessionStorage.setItem('bgColor', color);
+            
+            // Save to server
+            const formData = new FormData();
+            formData.append('bg_color', color);
+            
+            fetch('/settings/update_bg_color', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Background color updated!', 'success');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    }
+
+    // --- DISPLAY MODE LOGIC (Enhanced) ---
+    if (compactViewBtn && expandedViewBtn) {
+        const displayMode = sessionStorage.getItem('displayMode') || 'expanded';
+        
+        if (displayMode === 'compact') {
+            document.body.classList.add('compact-mode');
+        }
+        
+        compactViewBtn.addEventListener('click', function() {
+            document.body.classList.add('compact-mode');
+            sessionStorage.setItem('displayMode', 'compact');
+            showToast('Switched to Compact Mode', 'success');
+        });
+        
+        expandedViewBtn.addEventListener('click', function() {
+            document.body.classList.remove('compact-mode');
+            sessionStorage.setItem('displayMode', 'expanded');
+            showToast('Switched to Expanded Mode', 'success');
+        });
+    }
 });

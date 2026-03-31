@@ -1,0 +1,493 @@
+{% extends "base.html" %}
+
+{% block title %}Timer - Daily Planner System{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Stopwatch/Counter (Counts UP) -->
+            <div class="card shadow-lg timer-card stopwatch-card" data-aos="fade-up">
+                <div class="card-body text-center p-5">
+                    <h5 class="mb-4 text-white">Stopwatch</h5>
+                    
+                    <!-- Stopwatch Display -->
+                    <div class="stopwatch-display">
+                        <div class="countdown-time" id="stopwatchDisplay">00:00:00</div>
+                    </div>
+                    
+                    <!-- Stopwatch Controls -->
+                    <div class="timer-controls mb-4">
+                        <button class="btn btn-success btn-lg flex-fill me-2" id="startStopwatchBtn">
+                            <i class="bi bi-play-fill"></i> Start
+                        </button>
+                        <button class="btn btn-danger btn-lg flex-fill me-2" id="stopStopwatchBtn" style="display: none;">
+                            <i class="bi bi-stop-fill"></i> Stop
+                        </button>
+                        <button class="btn btn-secondary btn-lg flex-fill" id="resetStopwatchBtn">
+                            <i class="bi bi-arrow-counterclockwise"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Countdown Timer -->
+            <div class="card shadow-lg timer-card" data-aos="fade-up" style="margin-top: 20px;">
+                <div class="card-body text-center p-5">
+                    <h5 class="mb-4 text-white">Countdown Timer</h5>
+                    
+                    <div class="timer-main-display">
+                        <div class="time-input-group">
+                            <div class="time-input-column">
+                                <input type="number" id="timerHours" class="time-input" min="0" max="23" placeholder="00" value="00">
+                                <label>Hours</label>
+                            </div>
+                            <span class="time-separator">:</span>
+                            <div class="time-input-column">
+                                <input type="number" id="timerMinutes" class="time-input" min="0" max="59" placeholder="00" value="00">
+                                <label>Minutes</label>
+                            </div>
+                            <span class="time-separator">:</span>
+                            <div class="time-input-column">
+                                <input type="number" id="timerSeconds" class="time-input" min="0" max="59" placeholder="00" value="00">
+                                <label>Seconds</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Timer Display (when running) -->
+                    <div class="timer-display" id="timerDisplayArea" style="display: none;">
+                        <div class="countdown-time" id="countdownDisplay">00:00:00</div>
+                        <div class="timer-status" id="timerStatus">Running...</div>
+                    </div>
+                    
+                    <!-- Control Buttons -->
+                    <div class="timer-controls mb-4">
+                        <button class="btn btn-primary btn-lg flex-fill me-2" id="startTimerBtn">
+                            <i class="bi bi-play-fill"></i> Start Timer
+                        </button>
+                        <button class="btn btn-danger btn-lg flex-fill" id="stopTimerBtn" style="display: none;">
+                            <i class="bi bi-stop-fill"></i> Stop
+                        </button>
+                    </div>
+                    
+                    <!-- Preset Timers -->
+                    <div class="preset-timers">
+                        <label class="form-label fw-bold mb-3">Quick Timers</label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <button class="btn btn-light w-100 preset-btn" data-minutes="1">
+                                    <i class="bi bi-clock"></i> 1 Minute
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-light w-100 preset-btn" data-minutes="5">
+                                    <i class="bi bi-clock"></i> 5 Minutes
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-light w-100 preset-btn" data-minutes="10">
+                                    <i class="bi bi-clock"></i> 10 Minutes
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-light w-100 preset-btn" data-minutes="15">
+                                    <i class="bi bi-clock"></i> 15 Minutes
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-light w-100 preset-btn" data-minutes="30">
+                                    <i class="bi bi-clock"></i> 30 Minutes
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-light w-100 preset-btn" data-minutes="60">
+                                    <i class="bi bi-clock"></i> 1 Hour
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timer-card {
+    border: 2px solid #dee2e6;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.stopwatch-card {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.timer-main-display {
+    margin: 30px 0 40px 0;
+    padding: 40px 0;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+}
+
+.stopwatch-display {
+    margin: 30px 0 40px 0;
+    padding: 40px 0;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+}
+
+.time-input-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 3.5rem;
+    font-weight: 300;
+    letter-spacing: 5px;
+}
+
+.time-input-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.time-input {
+    width: 90px;
+    height: 100px;
+    font-size: 3rem;
+    font-weight: bold;
+    text-align: center;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.time-input:focus {
+    outline: none;
+    border-color: white;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.time-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.time-input-column label {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.time-separator {
+    color: white;
+    opacity: 0.7;
+    margin: 0 5px;
+}
+
+.countdown-time {
+    font-size: 5rem;
+    font-weight: bold;
+    letter-spacing: 3px;
+    margin: 30px 0;
+    font-family: 'Courier New', monospace;
+}
+
+.timer-status {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-top: 15px;
+}
+
+.timer-display {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+.timer-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.timer-controls .btn {
+    border-radius: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+.timer-controls .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.preset-timers {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 25px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.preset-timers .form-label {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.preset-btn {
+    background: white;
+    border: 2px solid #e9ecef;
+    color: #495057;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+}
+
+.preset-btn:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.preset-btn.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+#timerDisplayArea {
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+[data-theme="dark"] .timer-card {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+}
+
+[data-theme="dark"] .stopwatch-card {
+    background: linear-gradient(135deg, #c1272d 0%, #990000 100%);
+}
+
+[data-theme="dark"] .preset-timers {
+    background: rgba(60, 70, 80, 0.95);
+}
+
+[data-theme="dark"] .preset-timers .form-label {
+    color: #fff;
+}
+
+[data-theme="dark"] .preset-btn {
+    background: #3d444d;
+    border-color: #555;
+    color: #fff;
+}
+
+[data-theme="dark"] .time-input {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+</style>
+
+<script>
+let timerInterval = null;
+let stopwatchInterval = null;
+let totalSeconds = 0;
+let remainingSeconds = 0;
+let isTimerRunning = false;
+let stopwatchSeconds = 0;
+let isStopwatchRunning = false;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Stopwatch Elements
+    const startStopwatchBtn = document.getElementById('startStopwatchBtn');
+    const stopStopwatchBtn = document.getElementById('stopStopwatchBtn');
+    const resetStopwatchBtn = document.getElementById('resetStopwatchBtn');
+    const stopwatchDisplay = document.getElementById('stopwatchDisplay');
+
+    // Timer Elements
+    const hoursInput = document.getElementById('timerHours');
+    const minutesInput = document.getElementById('timerMinutes');
+    const secondsInput = document.getElementById('timerSeconds');
+    const startBtn = document.getElementById('startTimerBtn');
+    const stopBtn = document.getElementById('stopTimerBtn');
+    const timerDisplay = document.getElementById('timerDisplayArea');
+    const countdownDisplay = document.getElementById('countdownDisplay');
+    const presetBtns = document.querySelectorAll('.preset-btn');
+
+    // ===== STOPWATCH FUNCTIONALITY =====
+    startStopwatchBtn.addEventListener('click', function() {
+        isStopwatchRunning = true;
+        startStopwatchBtn.style.display = 'none';
+        stopStopwatchBtn.style.display = 'block';
+        
+        stopwatchInterval = setInterval(function() {
+            stopwatchSeconds++;
+            updateStopwatchDisplay();
+        }, 1000);
+    });
+
+    stopStopwatchBtn.addEventListener('click', function() {
+        isStopwatchRunning = false;
+        if (stopwatchInterval) {
+            clearInterval(stopwatchInterval);
+        }
+        startStopwatchBtn.style.display = 'block';
+        stopStopwatchBtn.style.display = 'none';
+    });
+
+    resetStopwatchBtn.addEventListener('click', function() {
+        isStopwatchRunning = false;
+        if (stopwatchInterval) {
+            clearInterval(stopwatchInterval);
+        }
+        stopwatchSeconds = 0;
+        updateStopwatchDisplay();
+        startStopwatchBtn.style.display = 'block';
+        stopStopwatchBtn.style.display = 'none';
+    });
+
+    function updateStopwatchDisplay() {
+        const hours = Math.floor(stopwatchSeconds / 3600);
+        const minutes = Math.floor((stopwatchSeconds % 3600) / 60);
+        const seconds = stopwatchSeconds % 60;
+        
+        stopwatchDisplay.textContent = 
+            String(hours).padStart(2, '0') + ':' +
+            String(minutes).padStart(2, '0') + ':' +
+            String(seconds).padStart(2, '0');
+    }
+
+    // ===== COUNTDOWN TIMER FUNCTIONALITY =====
+    // Preset timer buttons
+    presetBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const minutes = this.getAttribute('data-minutes');
+            minutesInput.value = String(minutes).padStart(2, '0');
+            hoursInput.value = '00';
+            secondsInput.value = '00';
+            hoursInput.focus();
+        });
+    });
+    
+    // Start timer button
+    startBtn.addEventListener('click', function() {
+        const hours = parseInt(hoursInput.value) || 0;
+        const minutes = parseInt(minutesInput.value) || 0;
+        const seconds = parseInt(secondsInput.value) || 0;
+        
+        totalSeconds = hours * 3600 + minutes * 60 + seconds;
+        
+        if (totalSeconds <= 0) {
+            alert('Please set a time greater than 0');
+            return;
+        }
+        
+        remainingSeconds = totalSeconds;
+        isTimerRunning = true;
+        
+        // Hide input area, show timer display
+        document.querySelector('.time-input-group').style.display = 'none';
+        timerDisplay.style.display = 'block';
+        document.querySelector('.preset-timers').style.display = 'none';
+        startBtn.style.display = 'none';
+        stopBtn.style.display = 'block';
+        
+        // Disable inputs
+        hoursInput.disabled = true;
+        minutesInput.disabled = true;
+        secondsInput.disabled = true;
+        
+        // Start countdown
+        runTimer();
+    });
+    
+    // Stop timer button
+    stopBtn.addEventListener('click', function() {
+        stopTimer();
+        resetTimer();
+    });
+    
+    function runTimer() {
+        timerInterval = setInterval(function() {
+            if (remainingSeconds <= 0) {
+                clearInterval(timerInterval);
+                triggerTimerNotification();
+                stopTimer();
+                return;
+            }
+            
+            remainingSeconds--;
+            updateDisplay();
+        }, 1000);
+    }
+    
+    function updateDisplay() {
+        const hours = Math.floor(remainingSeconds / 3600);
+        const minutes = Math.floor((remainingSeconds % 3600) / 60);
+        const seconds = remainingSeconds % 60;
+        
+        countdownDisplay.textContent = 
+            String(hours).padStart(2, '0') + ':' +
+            String(minutes).padStart(2, '0') + ':' +
+            String(seconds).padStart(2, '0');
+    }
+    
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+        }
+        isTimerRunning = false;
+    }
+    
+    function resetTimer() {
+        stopTimer();
+        totalSeconds = 0;
+        remainingSeconds = 0;
+        hoursInput.disabled = false;
+        minutesInput.disabled = false;
+        secondsInput.disabled = false;
+        document.querySelector('.time-input-group').style.display = 'flex';
+        timerDisplay.style.display = 'none';
+        document.querySelector('.preset-timers').style.display = 'block';
+        startBtn.style.display = 'block';
+        stopBtn.style.display = 'none';
+    }
+    
+    function triggerTimerNotification() {
+        // Simple notification when timer completes
+        showNotification('⏰ Timer Complete!', 'Your timer has finished!');
+    }
+    
+    function showNotification(title, message) {
+        if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification(title, {
+                body: message,
+                tag: 'timer_notification',
+                requireInteraction: true
+            });
+        }
+    }
+});
+</script>
+{% endblock %}

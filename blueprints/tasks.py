@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, send_file
 from flask_login import login_required, current_user
-from models import Task
-from datetime import datetime
+from models import Task, CompletedTask, Points, NotificationTracker
+from datetime import datetime, timedelta
 import csv
 import io
 from reportlab.lib.pagesizes import letter
@@ -37,12 +37,27 @@ def add_task():
     date = request.form.get('date', '')
     time = request.form.get('time', '')
     frequency = request.form.get('frequency', 'daily')
+    priority = request.form.get('priority', 'medium')
+    notification_type = request.form.get('notification_type', 'silent')
     
     if not name or not date:
         flash('Task name and date are required!', 'error')
         return redirect(url_for('tasks.tasks'))
+        
+    try:
+        task_date = datetime.strptime(date, '%Y-%m-%d').date()
+        if task_date < datetime.now().date():
+            flash('Cannot schedule a new task in the past!', 'error')
+            return redirect(url_for('tasks.tasks'))
+    except ValueError:
+        flash('Invalid date format!', 'error')
+        return redirect(url_for('tasks.tasks'))
     
-    Task.create(current_user.id, name, description, date, time, frequency)
+    Task.create(current_user.id, name, description, date, time, frequency, priority, notification_type)
+    
+    # Email reminder will be sent by scheduler 5 minutes before task time
+    # Removed duplicate confirmation email to prevent notification spam
+    
     flash('Task added successfully!', 'success')
     return redirect(url_for('tasks.tasks'))
 
@@ -60,13 +75,25 @@ def update_task(task_id):
     date = request.form.get('date', '')
     time = request.form.get('time', '')
     frequency = request.form.get('frequency', 'daily')
+    priority = request.form.get('priority', 'medium')
     status = request.form.get('status', 'incomplete')
+    notification_type = request.form.get('notification_type', 'silent')
     
     if not name or not date:
         flash('Task name and date are required!', 'error')
         return redirect(url_for('tasks.tasks'))
+        
+    # Only enforce future date validation if the task is INCOMPLETE
+    if status == 'incomplete':
+        try:
+            task_date = datetime.strptime(date, '%Y-%m-%d').date()
+            if task_date < datetime.now().date():
+                flash('Cannot update an incomplete task to a past date!', 'error')
+                return redirect(url_for('tasks.tasks'))
+        except ValueError:
+            pass
     
-    Task.update(task_id, name, description, date, time, frequency, status)
+    Task.update(task_id, name, description, date, time, frequency, priority, status, notification_type)
     flash('Task updated successfully!', 'success')
     return redirect(url_for('tasks.tasks'))
 
@@ -83,6 +110,19 @@ def delete_task(task_id):
     flash('Task deleted successfully!', 'success')
     return redirect(url_for('tasks.tasks'))
 
+@tasks_bp.route('/tasks/clear-all', methods=['POST'])
+@login_required
+def clear_all_tasks():
+    """Clear all tasks (both incomplete and complete) from the task list"""
+    user_tasks = Task.get_all_by_user(current_user.id)
+    
+    # Delete all tasks - completed task history is preserved in completed_tasks table
+    for task in user_tasks:
+        Task.delete(task['id'])
+    
+    flash('All tasks have been cleared. Task history is preserved in your records.', 'success')
+    return redirect(url_for('tasks.tasks'))
+
 @tasks_bp.route('/tasks/toggle/<int:task_id>', methods=['POST'])
 @login_required
 def toggle_task(task_id):
@@ -94,7 +134,51 @@ def toggle_task(task_id):
     new_status = 'complete' if task['status'] == 'incomplete' else 'incomplete'
     Task.update_status(task_id, new_status)
     
-    return jsonify({'success': True, 'status': new_status})
+    # Handle points logic
+    points_earned = 0
+    today_date = datetime.now().date()
+    
+    if new_status == 'complete':
+        # Check if points were already awarded for today
+        existing_record = CompletedTask.get_record(current_user.id, task_id, today_date)
+        
+        if not existing_record:
+            # Determine points based on priority
+            priority_points = {
+                'low': 5,
+                'medium': 10,
+                'high': 20
+            }
+            points_earned = priority_points.get(task['priority'] if task['priority'] else 'medium', 10)
+            
+            # Record completed task in history
+            CompletedTask.create(
+                user_id=current_user.id,
+                task_id=task_id,
+                task_name=task['name'],
+                completed_date=today_date,
+                points_earned=points_earned
+            )
+            
+            # Award points to user
+            Points.add_points(current_user.id, points_earned, reason='task_completed')
+    else:
+        # Task marked incomplete, revert today's points if they exist
+        existing_record = CompletedTask.get_record(current_user.id, task_id, today_date)
+        if existing_record:
+            points_to_revert = existing_record['points_earned']
+            # Revert points
+            Points.subtract_points(current_user.id, points_to_revert, reason='task_uncompleted')
+            # Remove completed task record
+            CompletedTask.remove_by_task_and_date(current_user.id, task_id, today_date)
+            # Send negative points so UI knows a deduction occurred (optional, but UI assumes points_earned is positive increment)
+            points_earned = -points_to_revert
+    
+    return jsonify({
+        'success': True,
+        'status': new_status,
+        'points_earned': points_earned
+    })
 
 @tasks_bp.route('/tasks/api')
 @login_required
@@ -114,6 +198,60 @@ def tasks_api():
         })
     
     return jsonify(events)
+
+@tasks_bp.route('/tasks/notifications')
+@login_required
+def get_task_notifications():
+    """API endpoint for checking tasks due for notifications"""
+    user_tasks = Task.get_all_by_user(current_user.id)
+    now = datetime.now()
+    
+    notifications = []
+    for task in user_tasks:
+        if task['status'] == 'complete':
+            continue
+            
+        task_date = datetime.strptime(task['date'], '%Y-%m-%d').date()
+        
+        # Check if task is for today
+        if task_date == now.date():
+            task_time = None
+            if task['time']:
+                try:
+                    task_time = datetime.strptime(task['time'], '%H:%M').time()
+                    task_datetime = datetime.combine(task_date, task_time)
+                    # Notify if time has arrived and not yet notified
+                    if task_datetime <= now:
+                        notifications.append({
+                            'id': task['id'],
+                            'name': task['name'],
+                            'type': 'time_due',
+                            'message': f"Task '{task['name']}' is due now!",
+                            'time': task['time']
+                        })
+                except ValueError:
+                    pass
+            else:
+                # No specific time, notify first thing in morning
+                notifications.append({
+                    'id': task['id'],
+                    'name': task['name'],
+                    'type': 'day_reminder',
+                    'message': f"You have a task today: '{task['name']}'",
+                    'time': None
+                })
+        
+        # Check if task is overdue
+        if task_date < now.date():
+            notifications.append({
+                'id': task['id'],
+                'name': task['name'],
+                'type': 'overdue',
+                'message': f"Task '{task['name']}' is overdue!",
+                'date': task['date']
+            })
+    
+    return jsonify(notifications)
 
 @tasks_bp.route('/export/csv')
 @login_required

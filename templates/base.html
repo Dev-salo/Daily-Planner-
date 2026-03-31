@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Daily Planner System{% endblock %}</title>
     
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='Logo.ico') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -18,8 +19,9 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
         <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold text-primary" href="{{ url_for('main.home') }}">
-                Daily Planner
+            <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" href="{{ url_for('main.home') }}">
+                <img src="{{ url_for('static', filename='images/logo.svg') }}" width="40" height="40" alt="Daily Planner Logo">
+                <span class="d-none d-md-inline">Daily Planner</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -27,31 +29,65 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url_for('main.home') }}">Home</a>
+                        <a class="nav-link text-dark d-flex align-items-center gap-2" href="{{ url_for('main.home') }}">
+                            <i class="bi bi-house-fill"></i>
+                            <span>Home</span>
+                        </a>
                     </li>
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url_for('tasks.tasks') }}">Task & Progress</a>
+                        <a class="nav-link text-dark d-flex align-items-center gap-2" href="{{ url_for('tasks.tasks') }}">
+                            <i class="bi bi-check-circle"></i>
+                            <span>Task & Progress</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url_for('main.calendar') }}">Calendar</a>
+                        <a class="nav-link text-dark d-flex align-items-center gap-2" href="{{ url_for('main.timer') }}">
+                            <i class="bi bi-clock-history"></i>
+                            <span>Timer</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url_for('notes.notes') }}">Notes & AI Chatbot</a>
+                        <a class="nav-link text-dark d-flex align-items-center gap-2" href="{{ url_for('main.calendar') }}">
+                            <i class="bi bi-calendar3"></i>
+                            <span>Calendar</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url_for('main.settings') }}">Settings</a>
+                        <a class="nav-link text-dark d-flex align-items-center gap-2" href="{{ url_for('notes.notes') }}">
+                            <i class="bi bi-chat-left-dots"></i>
+                            <span>Notes & AI</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url_for('auth.logout') }}">Logout</a>
+                        <a class="nav-link text-dark d-flex align-items-center gap-2" href="{{ url_for('main.settings') }}">
+                            <i class="bi bi-gear"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="timer-badge" class="nav-link ms-3 p-2" style="background-color: #ff6b6b; color: white; border-radius: 8px; display: none; cursor: pointer; min-width: 140px; text-align: center;" title="Click to view next task">
+                            <i class="bi bi-clock-history me-2"></i>
+                            <span id="timer-text">--:-- --</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark d-flex align-items-center gap-2" href="{{ url_for('auth.logout') }}">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Logout</span>
+                        </a>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="{{ url_for('auth.login') }}">Login</a>
+                        <a class="nav-link text-dark d-flex align-items-center gap-2" href="{{ url_for('auth.login') }}">
+                            <i class="bi bi-box-arrow-in-right"></i>
+                            <span>Login</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-primary text-white ms-2 px-4" href="{{ url_for('auth.register') }}">
-                            Get Started
+                        <a class="nav-link btn btn-primary text-white ms-2 px-4 d-flex align-items-center gap-2" href="{{ url_for('auth.register') }}">
+                            <i class="bi bi-person-plus"></i>
+                            <span>Get Started</span>
                         </a>
                     </li>
                     {% endif %}
@@ -82,17 +118,13 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-white border-top text-center py-4 mt-5">
-        <div class="container">
-            <p class="mb-0 text-muted">&copy; 2025 Daily Planner System. Stay organized, stay productive.</p>
-        </div>
-    </footer>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}?v={{ cache_buster }}"></script>
+    <script src="{{ url_for('static', filename='js/notifications.js') }}?t={{ range(1, 100000) | random }}"></script>
+    <script src="{{ url_for('static', filename='js/timer.js') }}?t={{ range(1, 100000) | random }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}?t={{ range(1, 100000) | random }}"></script>
     
     {% block extra_js %}{% endblock %}
     
