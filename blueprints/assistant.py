@@ -1,7 +1,7 @@
 import os
 from flask import Blueprint, request, jsonify
 from flask_login import login_required
-from google import genai
+import google.generativeai as genai
 from google.genai import types
 
 assistant_bp = Blueprint('assistant', __name__)
